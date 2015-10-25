@@ -19,9 +19,9 @@
 	</properties>
 	
 	<scm>
-		<connection>scm:git:https://github.com/amjadmsoft/amjad-test.git</connection>
-		<url>https://github.com/amjadmsoft/amjad-test</url>
-		<developerConnection>scm:git:https://github.com/amjadmsoft/amjad-test.git</developerConnection>
+		<connection>scm:git:git@github.com:amjadmsoft/amjad-test.git</connection>
+		<url>git@github.com:amjadmsoft/amjad-test.git</url>
+		<developerConnection>scm:git:git@github.com:amjadmsoft/amjad-test.git</developerConnection>
 		<tag>v1.0.0</tag>
 	</scm>
 	<distributionManagement>
@@ -125,7 +125,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
 				<configuration>
-					<tagNameFormat>userprovisioning-impl-v@{project.version}</tagNameFormat>
+					<tagNameFormat>amjad-test-v@{project.version}</tagNameFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<releaseProfiles>releases</releaseProfiles>
 				</configuration>
