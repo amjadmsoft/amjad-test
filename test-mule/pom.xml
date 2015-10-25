@@ -2,47 +2,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>my.test</groupId>
-	<artifactId>test-mule</artifactId>
-	<version>1.0.81-SNAPSHOT</version>
+	<groupId>com.mule</groupId>
+	<artifactId>amjad-test</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule</packaging>
-	<name>Mule test-mule Application</name>
+	<name>Mule Jenkins Demo Application</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.scm.id>github-scm-server</project.scm.id>	
-		<mule.version>3.6.0</mule.version>
-		<mule.tools.version>1.1</mule.tools.version>
-	</properties>
 
+		<mule.version>3.7.0</mule.version>
+		<mule.tools.version>1.1</mule.tools.version>
+		<munit.version>1.0.0</munit.version>
+		<mule.munit.support.version>3.7.0</mule.munit.support.version>
+	</properties>
+	
 	<scm>
 		<connection>scm:git:https://github.com/amjadmsoft/amjad-test.git</connection>
-		<url>scm:git:https://github.com/amjadmsoft/amjad-test.git</url>
+		<url>https://github.com/amjadmsoft/amjad-test</url>
 		<developerConnection>scm:git:https://github.com/amjadmsoft/amjad-test.git</developerConnection>
-		<tag>test-mule-1.0.78</tag>
+		<tag>v1.0.0</tag>
 	</scm>
-
-	<parent>
-		<groupId>com.mulesoft.consulting</groupId>
-		<artifactId>mule-app-parent</artifactId>
-		<version>1.1</version>
-		<relativePath>../parent-pom/pom.xml</relativePath>
-	</parent>
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Internal Releases</name>
+			<url>http://localhost:8090/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<name>Snapshot Releases</name>
+			<url>http://localhost:8090/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.7</version>
-					<configuration>
-						<skip>${skip.deploy.nexus}</skip>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
@@ -51,6 +46,28 @@
 				<extensions>true</extensions>
 				<configuration>
 					<copyToAppsDirectory>true</copyToAppsDirectory>
+					<inclusions>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-apikit</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-sfdc</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-ldap</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-support</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-spring-support</artifactId>
+						</inclusion>
+					</inclusions>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -79,68 +96,97 @@
 									<directory>src/main/app/</directory>
 								</resource>
 								<resource>
-									<directory>mappings/</directory>
+									<directory>src/main/api/</directory>
 								</resource>
 								<resource>
-									<directory>src/main/api/</directory>
+									<directory>mappings/</directory>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<!--Install clover-plugins -->
+			<plugin>
+				<groupId>com.mulesoft.munit.tools</groupId>
+				<artifactId>munit-maven-plugin</artifactId>
+				<version>${munit.version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<tagNameFormat>userprovisioning-impl-v@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<releaseProfiles>releases</releaseProfiles>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.8</version>
-				<executions>
-					<execution>
-						<id>copy-clover-plugins</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<overWriteReleases>true</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-							<stripVersion>true</stripVersion>
-
-							<outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.cloveretl</groupId>
-									<artifactId>cloveretl-engine</artifactId>
-									<version>${mule.version}</version>
-									<type>zip</type>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.3</version>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<configuration>
-							<tasks>
-								<!-- Using an ant task to deflate cloveretl-engine.zip -->
-								<unzip dest="${project.build.testOutputDirectory}" src="${project.build.testOutputDirectory}/cloveretl-engine.zip" />
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
-		</plugins>
-	</build>
 
+		</plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/munit</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
+	</build>
+	<profiles>
+		<profile>
+			<id>releases</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.4.4</version>
+						<executions>
+							<execution>
+								<id>default-deploy</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<serverId>nexus-releases</serverId>
+							<nexusUrl>http://localhost:8090/nexus/</nexusUrl>
+							<skipStaging>true</skipStaging>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 	<!-- Mule Dependencies -->
 	<dependencies>
 		<!-- Xml configuration -->
@@ -190,6 +236,11 @@
 		</dependency>
 		<!-- Mule Modules -->
 		<dependency>
+			<groupId>com.mulesoft.muleesb.modules</groupId>
+			<artifactId>mule-module-data-mapper</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-module-scripting</artifactId>
 			<version>${mule.version}</version>
@@ -201,6 +252,12 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.weave</groupId>
+			<artifactId>mule-plugin-weave_2.11</artifactId>
+			<version>${mule.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- for testing -->
 		<dependency>
 			<groupId>org.mule.tests</groupId>
@@ -209,10 +266,41 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.cloveretl</groupId>
-			<artifactId>cloveretl-engine</artifactId>
-			<version>${mule.version}</version>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-apikit</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-sfdc</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-ldap</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>mule-munit-support</artifactId>
+			<version>${mule.munit.support.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runner</artifactId>
+			<version>${munit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-support</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-spring-support</artifactId>
+			<version>${mule.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
@@ -221,9 +309,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-http</artifactId>
-			<version>${mule.version}</version>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.3.7</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -247,7 +335,13 @@
 			<url>http://repository.mulesoft.org/snapshots/</url>
 			<layout>default</layout>
 		</repository>
+		<repository>
+			<id>mule-ee-releases</id>
+			<name>MuleSoft Repository</name>
+			<url>https://repository-master.mulesoft.org/releases/</url>
+		</repository>
 	</repositories>
+	
 	<pluginRepositories>
 		<pluginRepository>
 			<id>mulesoft-release</id>
@@ -259,23 +353,5 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-	
-	<distributionManagement>
-	    <repository>
-	      <uniqueVersion>false</uniqueVersion>
-	      <id>nexus_release</id>
-	      <name>Corporate Repository</name>
-	      <url>http://localhost:8090/content/repositories/releases/</url>
-	      <layout>default</layout>
-	    </repository>
-	    <snapshotRepository>
-	      <uniqueVersion>true</uniqueVersion>
-	      <id>nexus_snapshot</id>
-	      <name>Propellors Snapshots</name>
-	      <url>http://localhost:8090/content/repositories/snapshots/</url>
-	      <layout>default</layout>
-	    </snapshotRepository>
-
-	  </distributionManagement>
 
 </project>
