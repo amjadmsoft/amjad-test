@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mule</groupId>
 	<artifactId>amjad-test</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<packaging>mule</packaging>
 	<name>Mule Jenkins Demo Application</name>
 
@@ -22,7 +22,7 @@
 		<connection>scm:git:git@github.com:amjadmsoft/amjad-test.git</connection>
 		<url>git@github.com:amjadmsoft/amjad-test.git</url>
 		<developerConnection>scm:git:git@github.com:amjadmsoft/amjad-test.git</developerConnection>
-		<tag>v1.0.0</tag>
+		<tag>amjad-test-v1.0.4</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
