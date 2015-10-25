@@ -204,7 +204,7 @@
 		<!-- for testing -->
 		<dependency>
 			<groupId>org.mule.tests</groupId>
-			<artifactId>amjad-tests-functional</artifactId>
+			<artifactId>mule-tests-functional</artifactId>
 			<version>${mule.version}</version>
 			<scope>test</scope>
 		</dependency>
